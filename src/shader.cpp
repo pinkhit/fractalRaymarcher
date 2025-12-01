@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 #include <glm/gtc/type_ptr.hpp>
 
 static std::string ParseShader(const std::string file)
@@ -136,6 +137,24 @@ void shader::bindVF() const
 void shader::unbindVF() const
 {
     glUseProgram(0);
+}
+
+bool shader::settingsChanged()
+{
+    bool update = memcmp(&currSet, &prevSet, sizeof(juliaSettings)) != 0;
+    if (update)
+        prevSet = currSet;
+    return update;
+}
+
+void shader::updateSettings() const
+{
+    setUniformV4("juliaConstant", currSet.juliaConstant);
+    setUniform1i("maxSteps", currSet.maxIterations);
+    setUniform1f("EPSILON", currSet.epsilon);
+    setUniform1i("AASAMPLES", currSet.aaSamples);
+    setUniform1f("fov", currSet.fov);
+
 }
 
 static unsigned int CreateShader(GLenum type, std::string& source, const std::string& filename)

@@ -1,13 +1,12 @@
 #include "camera.h"
 
 // creates canonical camera
-camera::camera(float w, float h)
+camera::camera(float w, float h):
+	yaw(0.0f), pitch(0.0f), roll(0.0f), speed(0.0f)
 {
 	eye = glm::vec3(0.0f, 0.0f, 3.0f);
 	lookAt = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	fov = 90.0f;
 
 	resolution.x = w;
 	resolution.y = h;
@@ -18,13 +17,12 @@ camera::~camera()
 
 }
 
-void camera::setUniforms(shader* pShader)
+void camera::setUniforms(shader* pShader) const
 {
 	pShader->setUniformV3("camPos", eye);
 	pShader->setUniformV3("camLookAt", lookAt);
 	pShader->setUniformV3("camUp", up);
 	pShader->setUniformV2("resolution", resolution);
-	pShader->setUniform1f("fov", fov);
 }
 
 

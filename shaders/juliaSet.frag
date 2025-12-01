@@ -6,25 +6,17 @@ uniform vec3 camUp;
 uniform float fov;
 uniform vec2 resolution;
 uniform mat3 rotation;
-// uniform vec4 juliaConstant; // c in z = z^2 + c as a quaternion 
-// uniform int maxSteps;       // max sphere trace iterations for raymarching
-uniform float time;
-
-vec3 camRight;
-
-// julia set is centered at origin, encapsulated by bounding sphere
-const float BOUNDING_SPHERE_RADIUS = 2.0;
-// const float EPSILON = 1e-2;
-// const float EPSILON = 0.002;
-// const int AASAMPLES = 4;
-// const int maxSteps = 80;
-const float ESCAPE_THRESHOLD = 1e1;
-const float DELTA = 1e-4; // used in finite difference approximation of the gradient to determine normals  
-
 uniform int AASAMPLES;
 uniform vec4 juliaConstant;
 uniform int maxSteps;
 uniform float EPSILON;
+
+// julia set is centered at origin, encapsulated by bounding sphere
+const float BOUNDING_SPHERE_RADIUS = 2.0;
+const float ESCAPE_THRESHOLD = 1e1;
+const float DELTA = 1e-4; // used in finite difference approximation of the gradient to determine normals  
+
+vec3 camRight;
 
 // const vec4 juliaConstant = vec4(-0.04, 0.95, 0.4, -0.43);
 // const vec4 juliaConstant = vec4( 0.15, -0.85,  0.50, -0.20);
@@ -81,6 +73,11 @@ void iterateIntersect(inout vec4 q, inout vec4 qp)
         qp = 2.0 * quartMult(q, qp);
         q = quartSquared(q) + juliaConstant;
 
+        if (juliaConstant == vec4(0.01))
+        {
+            q += vec4(1.0);
+        }
+
         if (dot(q,q) > ESCAPE_THRESHOLD)
         {
             break;
@@ -135,39 +132,6 @@ vec3 estimateNorm(vec3 p)
 
     return normalize(vec3(dx, dy, dz));
 }
-
-
-
-// vec3 estimateNorm(vec3 p)
-// {
-//     vec3 N;
-//     vec4 qP = vec4(p, 0.0);
-
-//     float gradX, gradY, gradZ;
-
-//     vec4 gx1 = qP - vec4(DELTA, 0.0, 0.0, 0.0);
-//     vec4 gx2 = qP - vec4(DELTA, 0.0, 0.0, 0.0);
-//     vec4 gy1 = qP - vec4(0.0, DELTA, 0.0, 0.0);
-//     vec4 gy2 = qP - vec4(0.0, DELTA, 0.0, 0.0);
-//     vec4 gz1 = qP - vec4(0.0, 0.0, DELTA, 0.0);
-//     vec4 gz2 = qP - vec4(0.0, 0.0, DELTA, 0.0);
-
-//     for (int i = 0; i < maxSteps; i++)
-//     {
-//         gx1 = quartSquared(gx1) + juliaConstant;
-//         gx2 = quartSquared(gx2) + juliaConstant;
-//         gy1 = quartSquared(gy1) + juliaConstant;
-//         gy2 = quartSquared(gy2) + juliaConstant;
-//         gz1 = quartSquared(gz1) + juliaConstant;
-//         gz2 = quartSquared(gz2) + juliaConstant;
-//     }
-
-//     gradX = length(gx2) - length(gx1);
-//     gradY = length(gy2) - length(gy1);
-//     gradZ = length(gz2) - length(gz1);
-//     N = normalize(vec3(gradX, gradY, gradZ));
-//     return N;
-// }
 
 vec3 shadePhong(vec3 L, vec3 P, vec3 N)
 {

@@ -5,6 +5,16 @@
 
 static const std::string baseShaderPath = "shaders/";
 
+struct juliaSettings
+{
+	int aaSamples = 4;
+	int maxIterations = 80;
+	float epsilon = 1e-3f;
+	glm::vec4 juliaConstant = glm::vec4(-0.04f, 0.95f, 0.4f, -0.43f);
+	float fov = 90.0f;
+};
+
+
 struct ShaderSources
 {
     std::string vertexShader;
@@ -32,6 +42,8 @@ public:
 	void bindVF() const;
 	void unbindVF() const;
 
+	bool settingsChanged();
+	void updateSettings() const;
 
 	// uniforms
 	//void setUniformMat4(const std::string& uniformName, glm::mat4 desiredMatrix) const;
@@ -43,6 +55,7 @@ public:
 	void setUniformV4(const std::string& uniformName, glm::vec4 desiredVec) const;
 	void setUniformMat3(const std::string& uniformName, glm::mat3 desiredMatrix) const;
 
+	juliaSettings currSet;
 private:
 	// private variables
 	unsigned int VF_ProgID;
@@ -51,7 +64,8 @@ private:
 	const std::string fragSourceFile;   // file path to frag shader
 	const std::string computeSourceFile;   // file path to frag shader
 	ShaderSources shaderSourceCode;    // store shader source code
-	
+	juliaSettings prevSet;
+
 	// private methods
 	unsigned int createVFProgram();
 	unsigned int createCompProgram();

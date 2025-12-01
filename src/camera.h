@@ -12,7 +12,7 @@ public:
 
 	void updateResolution(float w, float h) { resolution.x = w; resolution.y = h; };
 
-	void setUniforms(shader* pShader);
+	void setUniforms(shader* pShader) const;
 	glm::mat3 rotationMat();
 
 	glm::vec2 getResolution() const { return resolution; };
@@ -22,8 +22,6 @@ public:
 	float pitch;
 	float roll;
 	float speed;
-
-	float fov;
 private:
 	glm::vec3 eye;
 	glm::vec3 lookAt;
